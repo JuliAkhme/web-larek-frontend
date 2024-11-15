@@ -59,24 +59,24 @@ export class Contacts extends Form<IContacts> {
   protected _email: HTMLInputElement;
 
   constructor(
-      container: HTMLFormElement,
-      events: IEvents
+    container: HTMLFormElement,
+    events: IEvents
   ) {
-  super(container, events);
+    super(container, events);
 
-  this._phone = container.elements.namedItem('phone') as HTMLInputElement;
-  this._email = container.elements.namedItem('email') as HTMLInputElement;
+    this._phone = container.elements.namedItem('phone') as HTMLInputElement;
+    this._email = container.elements.namedItem('email') as HTMLInputElement;
     
-  if (this._phone) {
-    this._phone.addEventListener('input', () => {
-      this.onInputChange('phone', this._phone.value);
-    });
-  }
+    if (this._phone) {
+      this._phone.addEventListener('input', () => {
+        this.onInputChange('phone', this._phone.value);
+      });
+    }
 
-  if (this._email) {
-    this._email.addEventListener('input', () => {
-      this.onInputChange('phone', this._email.value);
-    });
-  }   
-}
+    if (this._email) {
+      this._email.addEventListener('input', () => {
+        this.onInputChange('email', this._email.value); // Исправляем на 'email'
+      });
+    }   
+  }
 }
