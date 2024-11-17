@@ -1,3 +1,4 @@
+import { ensureElement } from '../utils/utils';
 import { IEvents } from './base/events';
 import { Form } from './common/Form';
 
@@ -18,22 +19,22 @@ export class Order extends Form<IOrder> {
   ) {
     super(container, events);
 
-    this._card = container.elements.namedItem('card') as HTMLButtonElement;
-    this._cash = container.elements.namedItem('cash') as HTMLButtonElement;
-    this._deliveryAddressInput = container.elements.namedItem('address') as HTMLInputElement;
+    this._card = ensureElement<HTMLButtonElement>('.button_alt[name=card]', this.container);
+    this._cash = ensureElement<HTMLButtonElement>('.button_alt[name=cash]', this.container);
+    this._deliveryAddressInput = ensureElement<HTMLInputElement>('.form__input[name=address]', this.container);
     
     if (this._cash) {
       this._cash.addEventListener('click', () => {
-        this._cash.classList.add('button_alt-active')
-        this._card.classList.remove('button_alt-active')
-        this.onInputChange('paymentMethod', 'cash')
+        this.toggleClass(this._cash, 'button_alt-active', true);
+        this.toggleClass(this._card, 'button_alt-active', false);
+        this.onInputChange('paymentMethod', this._cash.value = 'cash');
       })
     }
     if (this._card) {
       this._card.addEventListener('click', () => {
-        this._card.classList.add('button_alt-active')
-        this._cash.classList.remove('button_alt-active')
-        this.onInputChange('paymentMethod', 'card')
+        this.toggleClass(this._cash, 'button_alt-active', false);
+        this.toggleClass(this._card, 'button_alt-active', true);
+        this.onInputChange('paymentMethod', this._card.value = 'card');
       })
     }
     if (this._deliveryAddressInput) {
@@ -44,8 +45,8 @@ export class Order extends Form<IOrder> {
   }
 
   disableButtons() {
-    this._cash.classList.remove('button_alt-active')
-    this._card.classList.remove('button_alt-active')
+    this.toggleClass(this._cash, 'button_alt-active', false);
+    this.toggleClass(this._card, 'button_alt-active', false);
   }
 }
 
@@ -64,8 +65,8 @@ export class Contacts extends Form<IContacts> {
   ) {
     super(container, events);
 
-    this._phone = container.elements.namedItem('phone') as HTMLInputElement;
-    this._email = container.elements.namedItem('email') as HTMLInputElement;
+    this._phone = ensureElement<HTMLInputElement>('.form__input[name=phone]', this.container);
+    this._email = ensureElement<HTMLInputElement>('.form__input[name=email]', this.container);
     
     if (this._phone) {
       this._phone.addEventListener('input', () => {
@@ -75,7 +76,7 @@ export class Contacts extends Form<IContacts> {
 
     if (this._email) {
       this._email.addEventListener('input', () => {
-        this.onInputChange('email', this._email.value); // Исправляем на 'email'
+        this.onInputChange('email', this._email.value);
       });
     }   
   }

@@ -1,5 +1,5 @@
 import { Model } from "./base/Model";
-import { IAppState, IProduct, IOrder, IOrderForm, TProductCategory, TFormErrors} from "../types/index";
+import { IAppState, IProduct, IOrder, IOrderForm, TProductCategory, TFormErrors, PaymentMehod} from "../types/index";
 
 export type CatalogChangeEvent = {
     catalog: IProduct[]
@@ -21,7 +21,7 @@ export class AppState extends Model<IAppState> {
     order: IOrder = {
         items: [],
         totalPrice: null,
-        paymentMethod: '',
+        paymentMethod: 'card',
         deliveryAddress: '',
         email: '',
         phone: ''
@@ -47,7 +47,10 @@ export class AppState extends Model<IAppState> {
     }
 
     getTotalPrice() {
-        return this.basket.reduce((sum, next) => sum + next.price, 0);
+        return this.basket.reduce((total, item) => {
+            // Если цена товара null, считаем его как 0
+            return total + (item.price ?? 0);
+          }, 0);
     }
 
     clearBasket() {
@@ -58,8 +61,16 @@ export class AppState extends Model<IAppState> {
         this.order.items = this.basket.map(item => item.id);
     }
 
+    setPayment(method: PaymentMehod) {
+        this.order.paymentMethod = method;
+    }
+
     setOrderField(field: keyof IOrderForm, value: string) {
-        this.order[field] = value;
+        if (field === 'paymentMethod') {
+			this.setPayment(value as PaymentMehod);
+		} else {
+			this.order[field] = value;
+		}
         if (this.validateContactsInfo()) {
             this.events.emit('contacts:ready', this.order);
         }
@@ -97,7 +108,7 @@ export class AppState extends Model<IAppState> {
     updateOrder() {
         this.order = {
             items: [],
-            paymentMethod: '',
+            paymentMethod: 'card',
             deliveryAddress: '',
             email: '',
             phone: '',

@@ -14,7 +14,7 @@ export interface IProduct {
 
 export interface IOrder {
     items: string[];  
-    paymentMethod: string;
+    paymentMethod: PaymentMehod;
     totalPrice: number;
     deliveryAddress: string;
     email: string;
@@ -22,11 +22,13 @@ export interface IOrder {
 }
   
 export interface IOrderForm {
-    paymentMethod: string;
+    paymentMethod: PaymentMehod;
     deliveryAddress: string;
     email: string;
     phone: string;
 }
+
+export type PaymentMehod = 'card' | 'cash';
 
 export interface IAppState {
     catalog: ProductItem[];
@@ -45,14 +47,19 @@ export interface IAppState {
     validateContactsInfo(): boolean;
     updateOrder(): boolean;
     notSelected(): void;
-  }
+}
 
 export type TFormErrors = Partial<Record<keyof IOrderForm, string>>;
 
 export type TCategoryMapping = {
     [Key in TProductCategory]: string;
-  };
+};
 
 export interface IApiResponse {
     items: IProduct[];
-  }
+}
+
+export interface IOrderResult {
+  id: string;
+  total: number;
+}

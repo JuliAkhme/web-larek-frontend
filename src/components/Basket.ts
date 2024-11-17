@@ -2,6 +2,7 @@ import { IProduct } from '../types';
 import { handlePrice } from '../utils/utils';
 import { Component } from '../components/base/Component';
 import { IEvents } from '../components/base/events';
+import { ProductItem } from './AppData';
 
 export interface IBasket {
   list: HTMLElement[];
@@ -24,17 +25,21 @@ export class Basket extends Component<IBasket> {
   }
 
   set totalPrice(price: number) {
-    this._price.textContent = handlePrice(price) + ' синапсов';
+    this.setText(this._price, handlePrice(price) + ' синапсов');
   }
 
   set list(items: HTMLElement[]) {
     this._list.replaceChildren(...items);
-    this._button.disabled = items.length ? false : true;
+    this.setDisabled(this._button, items.length === 0);
   }
 
   disableButton() {
-    this._button.disabled = true;
+    this.setDisabled(this._button, true);
   }
+
+  toggleButton(state: boolean) {
+    this.setDisabled(this._button, state);
+}
 
   updateIndex() {
     Array.from(this._list.children).forEach((item, index) =>
@@ -78,14 +83,14 @@ export class BasketItem extends Component<IBasketItem> {
   }
 
   set title(value: string) {
-    this._title.textContent = value;
+    this.setText(this._title, value);
   }
 
   set index(value: number) {
-    this._index.textContent = value.toString();
+    this.setText(this._index, value.toString());
   }
 
-  set totalPrice(value: number) {
-    this._price.textContent = handlePrice(value) + ' синапсов';
+  set unitPrice(value: number) {
+    this.setText(this._price, value ? handlePrice(value) + ' синапсов' : 'Бесценно');
   }
 }

@@ -52,34 +52,32 @@ constructor(protected blockName: string, container: HTMLElement, actions?: ICard
     }
 
     set title(value: string) {
-      this._title.textContent = value;
+      this.setText(this._title, value);
     }
     
     get title(): string {
       return this._title.textContent || '';
     }
 
-    set image(value: string) {
-      this._image.src = CDN_URL + value;
+    set image(src: string) {
+      this.setImage(this._image, src, this.title);
     }
   
     set isSelected(value: boolean) {
-      if (!this._button.disabled) {
-        this._button.disabled = value;
+      if (this._button) {
+        this.setDisabled(this._button, value);
       }
     }
 
     set category(value: TProductCategory) {
-      this._category.textContent = value;
-      this._category.classList.add(categoryMapping[value]);
+      this.setText(this._category, value);
+      this.toggleClass(this._category, categoryMapping[value], true);
     }
 
     set price(value: number | null) {
-      this._price.textContent = value
-        ? handlePrice(value) + ' синапсов'
-        : 'Бесценно';
-      if (this._button && !value) {
-        this._button.disabled = true;
+      this.setText(this._price, value ? handlePrice(value) + ' синапсов' : 'Бесценно');
+      if (this._button) {
+        this.setDisabled(this._button, !value);
       }
     }
 }
@@ -100,6 +98,6 @@ export class CatalogItemPreview extends Card {
   }
 
   set description(value: string) {
-    this._description.textContent = value;
+    this.setText(this._description, value)
   }
 }

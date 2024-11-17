@@ -7,12 +7,13 @@ import { CatalogItem, CatalogItemPreview } from './components/Card';
 import { AppState, ProductItem } from './components/AppData';
 import { ensureElement, cloneTemplate } from './utils/utils';
 import { IApiResponse, IOrderForm, IProduct } from './types/index';
-import { API_URL } from './utils/constants';
+import { API_URL, CDN_URL } from './utils/constants';
 import { Basket, BasketItem } from './components/Basket';
 import { Contacts, Order } from './components/Order';
 import { Success } from './components/Success';
+import { AppAPI } from './components/AppAPI';
 
-const api = new Api(API_URL);
+const api = new AppAPI(CDN_URL, API_URL);
 const events = new EventEmitter();
 
 const catalogProductTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
@@ -30,16 +31,17 @@ const order = new Order('order', cloneTemplate(orderTemplate), events)
 const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
 const success = new Success('order-success', cloneTemplate(successTemplate), {
   onClick: () => {
-    events.emit('modal:close')
+    events.emit('modal:close', () => {
+    page.locked = false;
+    appData.updateOrder();
+  })
     modal.close()
   }
 })
 
 api
-  .get('/product')
-  .then((res: IApiResponse) => {
-    appData.setCatalog(res.items as IProduct[]);
-  })
+  .getProductList()
+  .then(appData.setCatalog.bind(appData))
   .catch((err) => {
     console.error(err);
   });
@@ -96,9 +98,10 @@ events.on('basket:open', () => {
         onClick: () => events.emit('basket:delete', item)
       }
     );
+    catalogItem.unitPrice = item.price ?? null;
     return catalogItem.render({
       title: item.title,
-      price: item.price,
+      price: item.price ?? null,
       index: index + 1,
     });
   });
@@ -122,9 +125,11 @@ events.on('basket:delete', (item: ProductItem) => {
 })
 
 events.on('basket:order', () => {
+  appData.updateOrder();
   modal.render({
     content: order.render(
       {
+        paymentMethod: '',
         deliveryAddress: '',
         valid: false,
         errors: []
@@ -150,11 +155,11 @@ events.on('orderInput:change', (data: { field: keyof IOrderForm, value: string }
 });
 
 events.on('order:submit', () => {
-  appData.order.totalPrice = appData.getTotalPrice()
-  appData.setItemsID();
   modal.render({
     content: contacts.render(
       {
+        email: '',
+			  phone: '',
         valid: false,
         errors: []
       }
@@ -163,14 +168,15 @@ events.on('order:submit', () => {
 })
 
 events.on('contacts:submit', () => {
-  api.post('/order', appData.order)
-    .then((res) => {
-      events.emit('order:success', res);
+  api
+    .createOrder({...appData.order, ...appData.basket})
+    .then((data) => {
+      modal.render({
+        content: success.render()
+      });
+      success.total = data.total;
       appData.clearBasket();
       appData.updateOrder();
-      order.disableButtons();
-      page.counter = 0;
-      appData.notSelected();
     })
     .catch((err) => {
       console.log(err)
@@ -180,12 +186,11 @@ events.on('contacts:submit', () => {
 events.on('order:success', (res: ApiListResponse<string>) => {
   modal.render({
     content: success.render({
-      description: res.total
+      total: res.total
     })
   })
 })
 
 events.on('modal:close', () => {
   page.locked = false;
-  appData.updateOrder();
 });

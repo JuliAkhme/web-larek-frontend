@@ -6,12 +6,12 @@ interface ISuccessActions {
 }
 
 export interface ISuccess {
-  description: number;
+  total: number;
 }
 
 export class Success extends Component<ISuccess> {
   protected _button: HTMLButtonElement;
-  protected _description: HTMLElement;
+  protected _total: HTMLElement;
 
   constructor(
     protected blockName: string,
@@ -21,7 +21,7 @@ export class Success extends Component<ISuccess> {
     super(container);
 
     this._button = container.querySelector(`.${blockName}__close`);
-    this._description = container.querySelector(`.${blockName}__description`);
+    this._total = container.querySelector(`.${blockName}__description`);
 
     if (actions?.onClick) {
       if (this._button) {
@@ -30,7 +30,7 @@ export class Success extends Component<ISuccess> {
     }
   }
 
-  set description(value: number) {
-    this._description.textContent = 'Списано ' + handlePrice(value) + ' синапсов'
+  set total(value: number) {
+    this.setText(this._total, 'Списано ' + handlePrice(value) + ' синапсов')
   }
 }

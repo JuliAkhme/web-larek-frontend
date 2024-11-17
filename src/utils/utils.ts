@@ -138,7 +138,10 @@ export function createElement<
     return element;
 }
 
-export function handlePrice(price: number): string {
+export function handlePrice(price: number | null): string {
+    if (price === null) {
+        return 'Бесценно';
+    }
     const priceStr = price.toString();
     return priceStr.length < 5
       ? priceStr
