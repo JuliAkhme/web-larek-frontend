@@ -84,14 +84,8 @@ yarn build
 ### Описание ошибки валидации форм:
 `type TFormErrors = Partial<Record<keyof IOrder, string>>;`
 
-
-export type TCategoryMapping = { 
-    [Key in TProductCategory]: string; 
-  }; 
-
-  export interface IApiResponse { 
-    items: IProduct[]; 
-  } 
+### Типы категорий товаров:
+`type TCategoryMapping = {[Key in TProductCategory]: string;};` 
 
 ### Интерфейс карточки товара в каталоге IProduct:
 - `id: string;` - уникальный ID
@@ -130,16 +124,16 @@ export type TCategoryMapping = {
 - `phone: string;` - номер телефона
 
 ### Описание вариантов способа оплаты
-export type PaymentMethod = 'cash' | 'card';
+`type PaymentMethod = 'cash' | 'card';`
 
 ### Типы данных формы для заполнения способа оплаты и адреса:  
-export type TPaymentInfo = Pick<IOrder, 'paymentMethod' | 'deliveryAddress'>;
+`type TPaymentInfo = Pick<IOrder, 'paymentMethod' | 'deliveryAddress'>`
 
 ### Типы данных формы для заполнения номера телефона и электронной почты:
-export type TContactsInfo = Pick<IOrder, 'email' | 'phone'>;
+`type TContactsInfo = Pick<IOrder, 'email' | 'phone'>`
 
 ### Тип для сохранения всех данных пользователя для оформления заказа
-export type TOrderForm = Pick<IOrder, 'paymentMethod' | 'deliveryAddress' | 'email' | 'phone'>
+`type TOrderForm = Pick<IOrder, 'paymentMethod' | 'deliveryAddress' | 'email' | 'phone'>`
 
 ### Интерфейс карточки товара ICard:
 - `id: string;` - уникальный ID
