@@ -21,13 +21,11 @@ export class Order extends Form<TPaymentInfo> {
     this._cash.addEventListener('click', () => {
       this.paymentMethod = 'cash';  
       this.onInputChange('paymentMethod', 'cash');
-      console.log('err', this.paymentMethod)
     })
     
     this._card.addEventListener('click', () => {
       this.paymentMethod = 'card';  
       this.onInputChange('paymentMethod', 'card');
-      console.log('err', this.paymentMethod)
     })
 
     this._deliveryAddressInput.addEventListener('input', () => {
