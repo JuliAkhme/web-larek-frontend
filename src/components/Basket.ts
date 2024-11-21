@@ -20,7 +20,7 @@ export class Basket extends Component<IBasket> {
       this._price = container.querySelector(`.${blockName}__price`);
       this._list = container.querySelector(`.${blockName}__list`);
       if (this._button) {
-        this._button.addEventListener('click', () => this.events.emit('basket:order'))
+        this._button.addEventListener('click', () => this.events.emit('order:open'))
       }
   }
 
@@ -91,6 +91,6 @@ export class BasketItem extends Component<IBasketItem> {
   }
 
   set unitPrice(value: number) {
-    this.setText(this._price, value ? handlePrice(value) + ' синапсов' : 'Бесценно');
+    this.setText(this._price, handlePrice(value) + ' синапсов');
   }
 }

@@ -1,5 +1,6 @@
 import { Model } from "./base/Model";
-import { IAppState, IProduct, IOrder, IOrderForm, TProductCategory, TFormErrors, PaymentMehod} from "../types/index";
+import { IAppState, IProduct, IOrder, TProductCategory, TFormErrors, PaymentMethod, TOrderForm } from "../types/index";
+import { EMAIL_REGEXP, TEL_REGEXP } from "../utils/constants";
 
 export type CatalogChangeEvent = {
     catalog: IProduct[]
@@ -48,7 +49,6 @@ export class AppState extends Model<IAppState> {
 
     getTotalPrice() {
         return this.basket.reduce((total, item) => {
-            // Если цена товара null, считаем его как 0
             return total + (item.price ?? 0);
           }, 0);
     }
@@ -61,62 +61,60 @@ export class AppState extends Model<IAppState> {
         this.order.items = this.basket.map(item => item.id);
     }
 
-    setPayment(method: PaymentMehod) {
-        this.order.paymentMethod = method;
-    }
+    setPayment(method: PaymentMethod) {
+		this.order.paymentMethod = method;
+	}
 
-    setOrderField(field: keyof IOrderForm, value: string) {
+    setOrderField(field: keyof TOrderForm, value: string) { 
         if (field === 'paymentMethod') {
-			this.setPayment(value as PaymentMehod);
+			this.setPayment(value as PaymentMethod);
 		} else {
 			this.order[field] = value;
 		}
-        if (this.validateContactsInfo()) {
-            this.events.emit('contacts:ready', this.order);
-        }
-        if (this.validatePaymentInfo()) {
-            this.events.emit('order:ready', this.order);
-        }
     }
 
-    validatePaymentInfo() {
-        const errors: typeof this.formErrors = {};
-        if (!this.order.paymentMethod) {
-            errors.paymentMethod = 'Выберите способ оплаты';
-        }
-        if (!this.order.deliveryAddress) {
-            errors.deliveryAddress = 'Необходимо указать адрес доставки';
-        }
-        this.formErrors = errors;
-        this.events.emit('orderFormErrors:change', this.formErrors);
-        return Object.keys(errors).length === 0;
-    }
-
-    validateContactsInfo() {
-        const errors: typeof this.formErrors = {};
-        if (!this.order.email) {
-            errors.email = 'Необходимо указать email';
-        }
-        if (!this.order.phone) {
-            errors.phone = 'Необходимо указать телефон';
-        }
-        this.formErrors = errors;
-        this.events.emit('contactsFormErrors:change', this.formErrors);
-        return Object.keys(errors).length === 0;
-    }
-
-    updateOrder() {
-        this.order = {
-            items: [],
-            paymentMethod: 'card',
-            deliveryAddress: '',
-            email: '',
-            phone: '',
-            totalPrice: null
-        }
+    validatePaymentInfo() { 
+        const errors: typeof this.formErrors = {}; 
+        if (!this.order.paymentMethod) { 
+            errors.paymentMethod = 'Выберите способ оплаты'; 
+        } 
+        if (!this.order.deliveryAddress) { 
+            errors.deliveryAddress = 'Необходимо указать адрес доставки'; 
+        } 
+        this.formErrors = errors; 
+        this.events.emit('orderFormErrors:change', this.formErrors); 
+        return Object.keys(errors).length === 0; 
     } 
+ 
+    validateContactsInfo() { 
+        const errors: typeof this.formErrors = {}; 
+        if (!this.order.email) { 
+            errors.email = 'Необходимо указать email'; 
+        } else if (!EMAIL_REGEXP.test(this.order.email)) {
+			errors.email = 'Неправильно указан email';
+		}
+        if (!this.order.phone) { 
+            errors.phone = 'Необходимо указать телефон'; 
+        } else if (!TEL_REGEXP.test(this.order.phone)) {
+			errors.phone = 'Неправильно указан телефон';
+		}
+        this.formErrors = errors; 
+        this.events.emit('contactsFormErrors:change', this.formErrors); 
+        return Object.keys(errors).length === 0; 
+    } 
+ 
+    updateOrder() { 
+        this.order = { 
+            items: [], 
+            paymentMethod: 'card', 
+            deliveryAddress: '', 
+            email: '', 
+            phone: '', 
+            totalPrice: null 
+        } 
+    }  
 
-    notSelected() {
-        this.catalog.forEach(item => item.isSelected = false)
+    notSelected() { 
+        this.catalog.forEach(item => item.isSelected = false) 
     }
 }

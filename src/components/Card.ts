@@ -1,7 +1,6 @@
 import { Component } from './base/Component';
 import { TProductCategory } from '../types/index';
 import { ensureElement, handlePrice } from '../utils/utils';
-import { CDN_URL } from '../utils/constants';
 import { categoryMapping } from '../utils/constants';
 
 interface ICardActions {
@@ -64,20 +63,20 @@ constructor(protected blockName: string, container: HTMLElement, actions?: ICard
     }
   
     set isSelected(value: boolean) {
-      if (this._button) {
+      if (!this._button.disabled) {
         this.setDisabled(this._button, value);
       }
     }
 
     set category(value: TProductCategory) {
       this.setText(this._category, value);
-      this.toggleClass(this._category, categoryMapping[value], true);
+      this._category.classList.add(categoryMapping[value]);
     }
 
     set price(value: number | null) {
       this.setText(this._price, value ? handlePrice(value) + ' синапсов' : 'Бесценно');
-      if (this._button) {
-        this.setDisabled(this._button, !value);
+      if (this._button && !value) {
+        this._button.disabled = true;
       }
     }
 }
@@ -98,6 +97,6 @@ export class CatalogItemPreview extends Card {
   }
 
   set description(value: string) {
-    this.setText(this._description, value)
+    this.setText(this._description, value);
   }
 }

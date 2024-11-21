@@ -14,3 +14,6 @@ export const categoryMapping: TCategoryMapping = {
     кнопка: 'card__category_button',
     'хард-скил': 'card__category_hard',
   };
+
+export const EMAIL_REGEXP = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu;
+export const TEL_REGEXP = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im;
