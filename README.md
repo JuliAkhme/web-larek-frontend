@@ -117,9 +117,9 @@ yarn build
 
 ### Интерфейс IOrder, описывающий поля заказа товара:
 - `items: string[];` - массив ID купленных товаров
-- `paymentMethod: PaymentMethod;` - способ оплаты
+- `payment: PaymentMethod;` - способ оплаты
 - `totalPrice: number;` - сумма заказа
-- `deliveryAddress: string;` - адрес доставки
+- `address: string;` - адрес доставки
 - `email: string;` - электронная почта
 - `phone: string;` - номер телефона
 
@@ -127,18 +127,18 @@ yarn build
 `type PaymentMethod = 'cash' | 'card';`
 
 ### Типы данных формы для заполнения способа оплаты и адреса:  
-`type TPaymentInfo = Pick<IOrder, 'paymentMethod' | 'deliveryAddress'>`
+`type TPaymentInfo = Pick<IOrder, 'payment' | 'address'>`
 
 ### Типы данных формы для заполнения номера телефона и электронной почты:
 `type TContactsInfo = Pick<IOrder, 'email' | 'phone'>`
 
 ### Тип для сохранения всех данных пользователя для оформления заказа
-`type TOrderForm = Pick<IOrder, 'paymentMethod' | 'deliveryAddress' | 'email' | 'phone'>`
+`type TOrderForm = Pick<IOrder, 'payment' | 'address' | 'email' | 'phone'>`
 
 ### Интерфейс карточки товара ICard:
 - `id: string;` - уникальный ID
 - `title: string;` - название товара
-- `category: CategoryType;` - категория товара
+- `category: string;` - категория товара
 - `description: string;` - описание товара
 - `image: string;` - ссылка на картинку
 - `price: number | null;` - цена товара выражается числом либо null, если в качестве цены указывается «Бесценно»
@@ -156,7 +156,7 @@ yarn build
 ### Интерфейс IOrderResult для модального окна об успешном оформлении заказа
 export interface IOrderResult {
     id: string;
-    totalPrice: number;
+    total: number;
   }
 
 ### Класс Model<T>
@@ -170,7 +170,7 @@ export interface IOrderResult {
 В полях класса хранятся следующие данные:  
 - `catalog: ProductItem[];` - массив со всеми товарами
 - `basket: ProductItem[] = [];` - корзина с товарами
-- `order: IOrder = { items: [], totalPrice: 0, paymentMethod: '', deliveryAddress: '', email: '', phone: '' };` - объект заказа пользователя
+- `order: IOrder = { items: [], totalPrice: 0, payment: '', address: '', email: '', phone: '' };` - объект заказа пользователя
 - `formErrors: TFormErrors = {};` - объект с ошибками форм  
 
 Для взаимодействия с данными используются следующие методы:  
@@ -181,6 +181,7 @@ export interface IOrderResult {
 - `getTotalPrice(): number;` - метод для суммирования цен товаров, добавленных в корзину
 - `clearBasket(): void;` - метод для очистки корзины
 - `setItemsID(): void;` - метод для добавления ID товара в корзине
+- `setPayment(method: PaymentMethod): string;` - метод для добавления способа оплаты
 - `setOrderField(field: keyof IOrderForm, value: string): void;` - метод для заполнения обязательных к заполнению полей в формах оформления заказа
 - `validatePaymentInfo(): boolean;` - валидация форм для модального окна для ввода способа оплаты и адреса доставки
 - `validateContactsInfo(): boolean;` - валидация форм для модального окна для ввода номера телефона и электронной почты
@@ -260,14 +261,15 @@ export interface IOrderResult {
 Описывает модальное окно для указания способа оплаты и адреса доставки при оформлении заказа.  
 В полях класса хранятся следующие данные:  
 `protected _card: HTMLButtonElement;`  
-`protected _cash: HTMLButtonElement;`
+`protected _cash: HTMLButtonElement;` 
+`protected _address: HTMLInputElement;`
 
 Конструктор принимает имя блока, родительский элемент и обработчик событий:  
-` constructor(protected blockName: string, container: HTMLFormElement, protected events: IEvents);`  
+` constructor(container: HTMLFormElement, protected events: IEvents);`  
 
 Методы:
-- `set paymentMethod(value: PaymentMethod)` - сеттер для определения способа оплаты 
-- `set deliveryAddress(value: string)` - сеттер для внесения адреса доставки 
+- `set payment(value: PaymentMethod)` - сеттер для определения способа оплаты 
+- `set address(value: string)` - сеттер для внесения адреса доставки 
 
 ### Класс Contacts
 Описывает модальное окно для заполнения контактных данных при оформлении заказа.  
@@ -298,12 +300,11 @@ export interface IOrderResult {
 - `card:toBasket` – добавляет выбранный товар в корзину
 - `basket:open` – открывает модальное окно по клику на кнопку «Корзина»
 - `basket:delete` – удаляет выбранный товар из массива добавленных в корзину товаров
-- `basket:order` – открывает модальное окно с формой для заполнения способа оплаты и адреса доставки при оформлении заказа
+- `order:open` – открывает модальное окно с формой для заполнения способа оплаты и адреса доставки при оформлении заказа
 - `orderFormErrors:change` – проверяет внесение всех обязательных данных в форме для заполнения способа оплаты и адреса
 - `contactsFormErrors:change` – проверяет внесение всех обязательных данных в форме для заполнения номера телефона и электронной почты
 - `/^order\..*:change$/` - изменение полей в форме для заполнения способа оплаты и адреса
 - `/^contacts\..*:change$/` - изменение полей в форме для заполнения номера телефона и электронной почты
 - `order:submit` – переходит на второй этап оформления заказа, где необходимо внести номер телефона и электронную почту
 - `contacts:submit` – переходит на модальное окно об успешном оформлении заказа
-- `order:success` – открывает модальное окно, сообщающее об успешной оплате
 - `modal:close` – закрывает модальное окно по клику на кнопку закрытия или по клику вне модального окна
