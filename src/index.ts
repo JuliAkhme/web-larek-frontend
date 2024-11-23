@@ -81,7 +81,7 @@ events.on('card:toBasket', (item: ProductItem) => {
   item.isSelected = true; 
   appData.addToBasket(item); 
   page.counter = appData.getBasketAmount(); 
-  modal.close(); 
+  modal.close();
 }) 
  
 events.on('basket:open', () => { 

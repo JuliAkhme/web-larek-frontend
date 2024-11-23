@@ -36,14 +36,15 @@ export class Modal extends Component<IModalData> {
     };
 
     open() {
-        this.toggleClass(this.container, 'modal_active', true);
+        this._toggleModal();
+        document.addEventListener('keydown', this._handleEscape);
         this.events.emit('modal:open'); 
     }
 
     close() {
-        this.toggleClass(this.container, 'modal_active', false); 
-        this.content = null; 
-        this._handleEscape;
+        this._toggleModal(false); 
+        document.removeEventListener('keydown', this._handleEscape);
+        this.content = null;
         this.events.emit('modal:close'); 
     }
 
