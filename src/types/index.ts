@@ -14,14 +14,14 @@ export interface IProduct {
  
 export interface IOrder { 
     items: string[];   
-    paymentMethod: PaymentMethod; 
+    payment: PaymentMethod; 
     totalPrice: number; 
-    deliveryAddress: string; 
+    address: string; 
     email: string; 
     phone: string; 
 } 
    
-export type TOrderForm = Pick<IOrder, 'paymentMethod' | 'deliveryAddress' | 'email' | 'phone'>
+export type TOrderForm = Pick<IOrder, 'payment' | 'address' | 'email' | 'phone'>
  
 export interface IAppState { 
     catalog: ProductItem[]; 
@@ -55,10 +55,10 @@ export interface IApiResponse {
 
 export interface IOrderResult {
     id: string;
-    totalPrice: number;
+    total: number;
   }
 
 export type PaymentMethod = 'cash' | 'card';
 
-export type TPaymentInfo = Pick<IOrder, 'paymentMethod' | 'deliveryAddress'>;
+export type TPaymentInfo = Pick<IOrder, 'payment' | 'address'>;
 export type TContactsInfo = Pick<IOrder, 'email' | 'phone'>;

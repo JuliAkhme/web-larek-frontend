@@ -76,7 +76,7 @@ constructor(protected blockName: string, container: HTMLElement, actions?: ICard
     set price(value: number | null) {
       this.setText(this._price, value ? handlePrice(value) + ' синапсов' : 'Бесценно');
       if (this._button && !value) {
-        this._button.disabled = true;
+        this.setDisabled(this._button, !value);
       }
     }
 }

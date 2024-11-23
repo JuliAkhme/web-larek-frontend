@@ -6,7 +6,7 @@ import { Form } from './common/Form';
 export class Order extends Form<TPaymentInfo> { 
   protected _card: HTMLButtonElement; 
   protected _cash: HTMLButtonElement; 
-  protected _deliveryAddressInput: HTMLInputElement; 
+  protected _address: HTMLInputElement; 
    
   constructor( 
     container: HTMLFormElement, 
@@ -16,32 +16,32 @@ export class Order extends Form<TPaymentInfo> {
 
     this._card = ensureElement<HTMLButtonElement>('.button_alt[name=card]', this.container);
     this._cash = ensureElement<HTMLButtonElement>('.button_alt[name=cash]', this.container);
-    this._deliveryAddressInput = ensureElement<HTMLInputElement>('.form__input[name=address]', this.container);
+    this._address = ensureElement<HTMLInputElement>('.form__input[name=address]', this.container);
     
     this._cash.addEventListener('click', () => {
-      this.paymentMethod = 'cash';  
-      this.onInputChange('paymentMethod', 'cash');
-      console.log('err', this.paymentMethod)
-    })
+      this.payment = 'cash';
+      this.onInputChange('payment', 'cash');
+      this.events.emit('orderForm:change', { field: 'payment', value: 'cash' });
+    });
     
     this._card.addEventListener('click', () => {
-      this.paymentMethod = 'card';  
-      this.onInputChange('paymentMethod', 'card');
-      console.log('err', this.paymentMethod)
+      this.payment = 'card';  
+      this.onInputChange('payment', 'card');
+      this.events.emit('orderForm:change', { field: 'payment', value: 'card' });
     })
 
-    this._deliveryAddressInput.addEventListener('input', () => {
-      this.onInputChange('deliveryAddress', this._deliveryAddressInput.value);
+    this._address.addEventListener('input', () => {
+      this.onInputChange('address', this._address.value);
     })
   }
 
-  set paymentMethod(value: PaymentMethod) {
+  set payment(value: PaymentMethod) {
     this.toggleClass(this._card, 'button_alt-active', value === 'card');
 		this.toggleClass(this._cash, 'button_alt-active', value === 'cash');
   }
 
-  set deliveryAddress(value: string) {
-    this._deliveryAddressInput.value = value;
+  set address(value: string) {
+    this._address.value = value;
   }
 }
 

@@ -29,8 +29,12 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 const basket = new Basket('basket', cloneTemplate(basketTemplate), events); 
 const order = new Order(cloneTemplate(orderTemplate), events) 
 const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
-const success = new Success('order-success', cloneTemplate(successTemplate));
-
+const success = new Success('order-success', cloneTemplate(successTemplate), {
+  onClick: () => {
+    events.emit('modal:close')
+    modal.close()
+  }
+})
 api
   .getProductList()
   .then(appData.setCatalog.bind(appData))
@@ -115,11 +119,10 @@ events.on('basket:delete', (item: ProductItem) => {
  
 events.on('order:open', () => { 
   appData.updateOrder();
+  modal.open();
   modal.render({ 
     content: order.render( 
       { 
-        paymentMethod: 'card',
-        deliveryAddress: '', 
         valid: false, 
         errors: [] 
       } 
@@ -128,11 +131,11 @@ events.on('order:open', () => {
 }); 
  
 events.on('orderFormErrors:change', (errors: Partial<TPaymentInfo>) => { 
-  const { paymentMethod, deliveryAddress } = errors; 
-  const formIsValid = !paymentMethod && !deliveryAddress;
+  const { payment, address } = errors; 
+  const formIsValid = !payment && !address;
 	order.valid = formIsValid;
 	if (!formIsValid) {
-		order.errors = deliveryAddress;
+		order.errors = address;
 	} else {
 		order.errors = '';
 	}}); 
@@ -163,8 +166,6 @@ events.on('order:submit', () => {
   modal.render({ 
     content: contacts.render( 
       { 
-        email: '',
-        phone: '',
         valid: false, 
         errors: [] 
       } 
@@ -174,15 +175,15 @@ events.on('order:submit', () => {
 
 events.on('contacts:submit', () => {
   const orderData = {
-    ...appData.order,
-    totalPrice: appData.getTotalPrice()
+    ...appData.order, 
+    total: appData.getTotalPrice()
   }
   console.log('error', orderData)
   api
     .createOrder(orderData)
     .then((res) => {
       modal.render({content: success.render()});
-      success.description = res.totalPrice;
+      success.total = res.total;
 			appData.clearBasket();
 			appData.updateOrder();
     })

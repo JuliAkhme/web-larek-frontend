@@ -22,8 +22,8 @@ export class AppState extends Model<IAppState> {
     order: IOrder = {
         items: [],
         totalPrice: null,
-        paymentMethod: 'card',
-        deliveryAddress: '',
+        payment: 'card',
+        address: '',
         email: '',
         phone: ''
     };
@@ -62,11 +62,11 @@ export class AppState extends Model<IAppState> {
     }
 
     setPayment(method: PaymentMethod) {
-		this.order.paymentMethod = method;
+		this.order.payment = method;
 	}
 
     setOrderField(field: keyof TOrderForm, value: string) { 
-        if (field === 'paymentMethod') {
+        if (field === 'payment') {
 			this.setPayment(value as PaymentMethod);
 		} else {
 			this.order[field] = value;
@@ -75,11 +75,11 @@ export class AppState extends Model<IAppState> {
 
     validatePaymentInfo() { 
         const errors: typeof this.formErrors = {}; 
-        if (!this.order.paymentMethod) { 
-            errors.paymentMethod = 'Выберите способ оплаты'; 
+        if (!this.order.payment) { 
+            errors.payment = 'Выберите способ оплаты'; 
         } 
-        if (!this.order.deliveryAddress) { 
-            errors.deliveryAddress = 'Необходимо указать адрес доставки'; 
+        if (!this.order.address) { 
+            errors.address = 'Необходимо указать адрес доставки'; 
         } 
         this.formErrors = errors; 
         this.events.emit('orderFormErrors:change', this.formErrors); 
@@ -106,8 +106,8 @@ export class AppState extends Model<IAppState> {
     updateOrder() { 
         this.order = { 
             items: [], 
-            paymentMethod: 'card', 
-            deliveryAddress: '', 
+            payment: 'card', 
+            address: '', 
             email: '', 
             phone: '', 
             totalPrice: null 

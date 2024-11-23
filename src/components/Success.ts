@@ -1,4 +1,4 @@
-import { handlePrice } from '../utils/utils';
+import { ensureElement, handlePrice } from '../utils/utils';
 import { Component } from './base/Component';
 
 interface ISuccessActions {
@@ -20,17 +20,15 @@ export class Success extends Component<ISuccess> {
   ) {
     super(container);
 
-    this._button = container.querySelector(`.${blockName}__close`);
-    this._description = container.querySelector(`.${blockName}__description`);
+    this._button = ensureElement<HTMLButtonElement>(`.${blockName}__close`, this.container);
+    this._description = ensureElement<HTMLElement>(`.${blockName}__description`, this.container);
 
     if (actions?.onClick) {
-      if (this._button) {
-        this._button.addEventListener('click', actions.onClick)
-      }
+      this._button.addEventListener('click', actions.onClick);
     }
   }
 
-  set description(value: number) {
+  set total(value: number) {
     this.setText(this._description, 'Списано ' + handlePrice(value) + ' синапсов');
   }
 }
